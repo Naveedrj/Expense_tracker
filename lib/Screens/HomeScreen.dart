@@ -1,8 +1,7 @@
-import 'package:expence_app/VIEWS/ViewExpanse.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:expense_app/VIEWS/ViewExpanse.dart';
 import 'package:flutter/material.dart';
-import 'package:expence_app/MODELS/Expense.dart';
-import 'package:expence_app/Screens/Add_expense.dart';
+import 'package:expense_app/MODELS/Expense.dart';
+import 'package:expense_app/Screens/Add_expense.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -13,8 +12,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
   List<Expense> expenses = [
-    Expense(dateTime: DateTime.now(), catagory: Catagory.family , amount: 25.654654654, title: 'Title'),
-    Expense(dateTime: DateTime.now(), catagory: Catagory.work, amount: 56, title: 'Title2')
 
   ];
   int iteration = 0;
@@ -23,8 +20,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showAddScreen(){
     showModalBottomSheet(
         context: context,
-        builder: (context) => AddExpense(),
+        builder: (context) => AddExpense(addExpense: addExpense),
     );
+  }
+  void addExpense(Expense expense){
+    setState(() {
+      expenses.add(expense);
+    });
   }
 
   @override
@@ -53,7 +55,14 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ListView.builder(
                 itemCount: expenses.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return ViewExpense(expense: expenses[index]);
+                  return Dismissible(
+                    onDismissed: (direction){
+                      setState(() {
+                        expenses.removeAt(index);
+                      });
+                    } ,
+                      key: ValueKey(expenses[index]),
+                      child: ViewExpense(expense: expenses[index]));
                 },
               ),
             )

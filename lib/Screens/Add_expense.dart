@@ -1,106 +1,166 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:expence_app/MODELS/Expense.dart';
+import 'package:expense_app/MODELS/Expense.dart';
 
 class AddExpense extends StatefulWidget {
-  const AddExpense({Key? key}) : super(key: key);
+  const AddExpense({
+    required this.addExpense,
+    Key? key,
+  }) : super(key: key);
+
+  final void Function(Expense expense) addExpense;
 
   @override
-  State<AddExpense> createState() {
-    return _AddExpenseState();
-  }
+  State<AddExpense> createState() => _AddExpenseState();
 }
 
 class _AddExpenseState extends State<AddExpense> {
+  late DateTime _selectedDate = DateTime.now();
+  late Catagory _selectedCategory = Catagory.vacations;
+  TextEditingController titleController = TextEditingController();
+  TextEditingController amountController = TextEditingController();
 
-  void onTap()async{
+  @override
+  void initState() {
+    super.initState();
+  }
 
+  void addExpenseOnPress() {
+    final amount = double.tryParse(amountController.text);
+
+    print(titleController.text);
+    print(amount);
+
+    if (amountController.text.isNotEmpty && amount != null) {
+      widget.addExpense(
+        Expense(
+          dateTime: _selectedDate,
+          catagory: _selectedCategory,
+          amount: amount,
+          title: titleController.text,
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Invalid Input'),
+            content: Text('Please enter valid title and amount.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       child: Center(
         child: Column(
           children: [
             TextField(
+              controller: titleController,
               maxLength: 50,
               decoration: InputDecoration(
                 labelText: 'Title',
               ),
             ),
-            SizedBox(height: 10), // Added SizedBox for spacing
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
                   child: TextField(
+                    controller: amountController,
                     maxLength: 50,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: 'Amount',
                     ),
                   ),
                 ),
-                SizedBox(width: 80,
-                child: Padding(
+                Padding(
                   padding: const EdgeInsets.all(10),
-                  child: Text('Date'),
+                  child: DropdownButton<Catagory>(
+                    value: _selectedCategory,
+                    items: Catagory.values.map((category) {
+                      return DropdownMenuItem<Catagory>(
+                        value: category,
+                        child: Text(category.name),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value == null) {
+                        return;
+                      }
+                      setState(() {
+                        _selectedCategory = value;
+                      });
+                    },
+                  ),
                 ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 100,
+                  child: Text(
+                    '${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}',
+                  ),
                 ),
                 IconButton(
-                  onPressed: () {
-                    // Add your logic for handling date selection
-                  },
-                  icon: Icon(Icons.date_range),
+                  onPressed: () => _selectDate(context),
+                  icon: const Icon(Icons.date_range),
                 ),
               ],
             ),
-            DropdownButton(
-                items: Catagory.values.map((e) => DropdownMenuItem(child: Text(e.name.toString()))).toList(),
-                onChanged: (value){},
-            ),
-            
-            
-            SizedBox(height: 25,),
+            const SizedBox(height: 25),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                        ),
-                          onPressed: (){},
-                          child: Text('Cancel')
-                      ),
-                    ],
+                  child: OutlinedButton(
+                    onPressed: () {},
+                    child: const Text('Cancel'),
                   ),
                 ),
-                SizedBox(width: 8,),
+                const SizedBox(width: 8),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.black,
-                          ),
-                          onPressed: (){},
-                          child: Text('Add Expense')
-                      ),
-                    ],
+                  child: ElevatedButton(
+                    onPressed: addExpenseOnPress,
+                    child: const Text('Add Expense'),
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    amountController.dispose();
+    super.dispose();
   }
 }
