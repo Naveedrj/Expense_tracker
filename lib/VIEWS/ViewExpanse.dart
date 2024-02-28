@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:expense_app/MODELS/Expense.dart';
+import 'package:expence_app/MODELS/Expense.dart';
 import 'package:intl/intl.dart';
 
 class ViewExpense extends StatelessWidget {

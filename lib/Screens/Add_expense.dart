@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:expense_app/MODELS/Expense.dart';
+import 'package:expence_app/MODELS/Expense.dart';
 
 class AddExpense extends StatefulWidget {
   const AddExpense({
@@ -75,83 +75,108 @@ class _AddExpenseState extends State<AddExpense> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Center(
-        child: Column(
-          children: [
-            TextField(
-              controller: titleController,
-              maxLength: 50,
-              decoration: InputDecoration(
-                labelText: 'Title',
+      padding: const EdgeInsets.fromLTRB(25 , 50 , 25 , 25),
+      child: SafeArea(
+        child: Center(
+          child: Column(
+            children: [
+              TextField(
+                controller: titleController,
+                maxLength: 50,
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                  labelStyle: TextStyle(
+                    fontWeight: FontWeight.bold
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black, width: 2.0),
+                  ),
+                ),
+
               ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
+              Container(
+                width: 150,
+                child: Expanded(
                   child: TextField(
                     controller: amountController,
                     maxLength: 50,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: 'Amount',
+                      labelStyle: TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 2.0),
+                      ),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: DropdownButton<Catagory>(
-                    value: _selectedCategory,
-                    items: Catagory.values.map((category) {
-                      return DropdownMenuItem<Catagory>(
-                        value: category,
-                        child: Text(category.name),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value == null) {
-                        return;
-                      }
-                      setState(() {
-                        _selectedCategory = value;
-                      });
-                    },
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: DropdownButton<Catagory>(
+                      value: _selectedCategory,
+                      items: Catagory.values.map((category) {
+                        return DropdownMenuItem<Catagory>(
+                          value: category,
+                          child: Text(category.name),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value == null) {
+                          return;
+                        }
+                        setState(() {
+                          _selectedCategory = value;
+                        });
+                      },
+                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                SizedBox(
-                  width: 100,
-                  child: Text(
-                    '${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}',
+                  SizedBox(
+                    width: 100,
+                    child: Text(
+                      '${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}',
+                    ),
                   ),
-                ),
-                IconButton(
-                  onPressed: () => _selectDate(context),
-                  icon: const Icon(Icons.date_range),
-                ),
-              ],
-            ),
-            const SizedBox(height: 25),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {},
-                    child: const Text('Cancel'),
+                  IconButton(
+                    onPressed: () => _selectDate(context),
+                    icon: const Icon(Icons.date_range),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: addExpenseOnPress,
-                    child: const Text('Add Expense'),
+                ],
+              ),
+              const SizedBox(height: 25),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.black
+                      ),
+                      onPressed: () {},
+                      child: const Text('Cancel'),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.black
+                      ),
+                      onPressed: addExpenseOnPress,
+                      child: const Text('Add Expense'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
